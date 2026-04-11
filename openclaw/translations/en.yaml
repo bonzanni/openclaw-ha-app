@@ -1,0 +1,13 @@
+configuration:
+  log_level:
+    name: Log Level
+    description: Gateway and add-on log verbosity
+  gateway_port:
+    name: Gateway Port
+    description: Internal gateway port (default 18789, rarely needs changing)
+  enable_terminal:
+    name: Enable Web Terminal
+    description: Show a terminal tab in the sidebar panel for shell access
+  enable_ha_mcp:
+    name: Enable HA MCP
+    description: Start mcporter daemon for Home Assistant MCP tool access (requires mcp_server integration in HA)
