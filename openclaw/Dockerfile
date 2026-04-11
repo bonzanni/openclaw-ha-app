@@ -26,16 +26,28 @@ COPY --from=openclaw-build /usr/local/lib/node_modules /usr/local/lib/node_modul
 RUN ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/openclaw \
     && chmod +x /usr/local/bin/openclaw
 
-# Install runtime dependencies (trixie has ttyd in repos)
+# Install runtime dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         nginx \
-        ttyd \
         curl \
         openssl \
         procps \
         jq \
+        libwebsockets-dev \
+        libjson-c-dev \
+        libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Install ttyd (not packaged in Debian)
+ARG TTYD_VERSION=1.7.7
+RUN ARCH="$(dpkg --print-architecture)" \
+    && if [ "$ARCH" = "amd64" ]; then TTYD_ARCH="x86_64"; \
+       elif [ "$ARCH" = "arm64" ]; then TTYD_ARCH="aarch64"; \
+       else echo "Unsupported arch: $ARCH"; exit 1; fi \
+    && curl -fsSL "https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.${TTYD_ARCH}" \
+        -o /usr/bin/ttyd \
+    && chmod +x /usr/bin/ttyd
 
 # Create persistent data directories
 RUN mkdir -p /data/openclaw
