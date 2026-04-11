@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:openclaw.ai)",
+      "Bash(gh api:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.openclaw.ai)",
+      "Bash(python3 -c \"import json,sys; [print\\(x['name']\\) for x in json.load\\(sys.stdin\\)]\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(x['name']\\) for x in data]\")",
+      "Bash(python3 -c \"import json,sys,base64; d=json.load\\(sys.stdin\\); print\\(base64.b64decode\\(d['content']\\).decode\\(\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(x['path']\\) for x in d.get\\('tree',[]\\)]\")",
+      "Bash(python3 -c \"import sys,base64; print\\(base64.b64decode\\(sys.stdin.read\\(\\).strip\\(\\).replace\\('\\\\n',''\\)\\).decode\\(\\)\\)\")",
+      "Bash(python3:*)",
+      "WebFetch(domain:open-claw.bot)",
+      "WebFetch(domain:www.glbgpt.com)",
+      "WebFetch(domain:lumadock.com)",
+      "Bash(grep -E \"\\\\.\\(py|json|yaml|yml\\)$\")",
+      "Bash(find /c/Users/nicol/Projects/openclaw/src/gateway/server* -type f)",
+      "Bash(xargs grep:*)",
+      "Bash(curl -s \"https://api.github.com/repos/home-assistant/home-assistant-mcp\")",
+      "Bash(curl:*)",
+      "Bash(grep -E \"\\\\.json$|\\\\.md$\")",
+      "WebFetch(domain:www.home-assistant.io)",
+      "WebFetch(domain:developers.home-assistant.io)",
+      "Bash(pip show:*)"
+    ]
+  }
+}

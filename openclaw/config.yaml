@@ -30,11 +30,7 @@ ports_description:
   18790/tcp: "Bridge Protocol (multi-gateway federation)"
 options:
   log_level: "info"
-  gateway_port: 18789
   enable_terminal: false
-  enable_ha_mcp: true
 schema:
   log_level: "list(trace|debug|info|notice|warning|error|fatal)"
-  gateway_port: "port"
   enable_terminal: "bool"
-  enable_ha_mcp: "bool"

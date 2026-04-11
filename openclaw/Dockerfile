@@ -17,10 +17,10 @@ RUN npm install -g "openclaw@${OPENCLAW_VERSION}" \
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Copy Node.js binary from build stage
+# Copy Node.js runtime from build stage (node, npm, npx + all modules)
 COPY --from=openclaw-build /usr/local/bin/node /usr/local/bin/node
-
-# Copy OpenClaw and all node_modules from build stage
+COPY --from=openclaw-build /usr/local/bin/npm /usr/local/bin/npm
+COPY --from=openclaw-build /usr/local/bin/npx /usr/local/bin/npx
 COPY --from=openclaw-build /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 # Create openclaw symlink in PATH

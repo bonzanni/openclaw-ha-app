@@ -38,7 +38,7 @@ server {
     }
 
     # Terminal (ttyd) — only proxied when enabled
-    {{ if eq .terminal_enabled "true" }}
+    {{ if .terminal_enabled }}
     location /terminal/ {
         proxy_pass http://127.0.0.1:7681/terminal/;
         proxy_http_version 1.1;

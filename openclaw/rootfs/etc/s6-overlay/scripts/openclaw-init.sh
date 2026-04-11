@@ -32,18 +32,15 @@ else
 fi
 
 # --------------------------------------------------------------------------
-# 3. Resolve HA URL for allowedOrigins
+# 3. Resolve HA ingress URL for allowedOrigins
 # --------------------------------------------------------------------------
 
-declare HA_URL=""
+declare INGRESS_URL=""
 if bashio::supervisor.ping 2>/dev/null; then
-    HA_URL=$(bashio::api.supervisor GET /core/api/config false \
-        | jq -r '.external_url // .internal_url // empty' 2>/dev/null) || true
+    INGRESS_URL=$(bashio::addon.ingress_url 2>/dev/null) || true
 fi
 
-if [ -z "${HA_URL}" ]; then
-    bashio::log.warning "Could not determine HA URL for allowedOrigins. Control UI CORS may fail."
-fi
+bashio::log.info "Ingress URL: ${INGRESS_URL:-not available}"
 
 # --------------------------------------------------------------------------
 # 4. Write openclaw.json (first boot only)
@@ -58,8 +55,8 @@ if [ ! -f "${CONFIG_FILE}" ]; then
     bashio::log.info "First boot — generating openclaw.json..."
 
     declare ORIGINS="[]"
-    if [ -n "${HA_URL}" ]; then
-        ORIGINS=$(jq -n --arg url "${HA_URL}" '[$url]')
+    if [ -n "${INGRESS_URL}" ]; then
+        ORIGINS=$(jq -n --arg url "${INGRESS_URL}" '[$url]')
     fi
 
     jq -n \
@@ -96,10 +93,10 @@ else
     bashio::log.info "Existing openclaw.json found — patching HA-managed keys only."
 
     # Patch allowedOrigins (HA URL may have changed)
-    if [ -n "${HA_URL}" ]; then
+    if [ -n "${INGRESS_URL}" ]; then
         declare TMP_FILE
         TMP_FILE=$(mktemp)
-        jq --arg url "${HA_URL}" \
+        jq --arg url "${INGRESS_URL}" \
             '.gateway.controlUi.allowedOrigins = [$url]' \
             "${CONFIG_FILE}" > "${TMP_FILE}" \
             && mv "${TMP_FILE}" "${CONFIG_FILE}"
@@ -123,7 +120,6 @@ declare ENV_FILE="/data/openclaw/env"
     echo "OPENCLAW_STATE_DIR=/config/.openclaw"
     echo "OPENCLAW_CONFIG_PATH=/config/.openclaw/openclaw.json"
     echo "OPENCLAW_GATEWAY_TOKEN=${GATEWAY_TOKEN}"
-    echo "SUPERVISOR_TOKEN=${SUPERVISOR_TOKEN}"
     echo "NODE_OPTIONS=--max-old-space-size=2048"
 } > "${ENV_FILE}"
 chmod 600 "${ENV_FILE}"
