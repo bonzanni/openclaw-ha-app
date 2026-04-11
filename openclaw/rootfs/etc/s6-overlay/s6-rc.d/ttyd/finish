@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+
+if ! bashio::config.true 'enable_terminal'; then
+    exit 256
+fi
+
+bashio::log.warning "ttyd exited with code ${1}"

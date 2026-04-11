@@ -1,0 +1,23 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start OpenClaw Gateway
+# ==============================================================================
+
+declare LOG_LEVEL
+LOG_LEVEL=$(bashio::config 'log_level')
+
+# Source generated environment (SUPERVISOR_TOKEN, gateway token, etc.)
+if [ -f /data/openclaw/env ]; then
+    set -a
+    # shellcheck source=/dev/null
+    source /data/openclaw/env
+    set +a
+fi
+
+bashio::log.info "Starting OpenClaw Gateway on port 18789..."
+
+exec node /usr/local/lib/node_modules/openclaw/openclaw.mjs gateway run \
+    --port 18789 \
+    --bind lan \
+    --allow-unconfigured

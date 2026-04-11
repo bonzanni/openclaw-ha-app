@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start nginx (ingress reverse proxy)
+# ==============================================================================
+
+bashio::log.info "Starting nginx..."
+exec nginx -g "daemon off;"

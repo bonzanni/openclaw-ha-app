@@ -1,0 +1,18 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start ttyd web terminal (conditional)
+# ==============================================================================
+
+if ! bashio::config.true 'enable_terminal'; then
+    bashio::log.info "Terminal is disabled. Sleeping."
+    exec sleep infinity
+fi
+
+bashio::log.info "Starting ttyd web terminal..."
+exec ttyd \
+    --writable \
+    --interface 127.0.0.1 \
+    --port 7681 \
+    --base-path /terminal \
+    bash
