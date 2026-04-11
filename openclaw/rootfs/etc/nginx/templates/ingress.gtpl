@@ -1,20 +1,9 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
-    # Landing page (static HTML)
-    location = / {
-        root /app/www;
-        index index.html;
-    }
-
-    location /static/ {
-        alias /app/www/;
-        expires 1h;
-    }
-
-    location /config.json {
-        alias /app/www/config.json;
-    }
+    # Landing page and static files
+    root /app/www;
+    index index.html;
 
     # Gateway UI — pre-authenticated via server-side token injection
     location /gateway/ {
