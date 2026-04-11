@@ -5,4 +5,4 @@
 # ==============================================================================
 
 bashio::log.info "Starting nginx..."
-exec nginx -g "daemon off;"
+exec nginx

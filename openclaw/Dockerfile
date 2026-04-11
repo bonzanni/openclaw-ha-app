@@ -35,8 +35,8 @@ RUN apt-get update \
         procps \
         jq \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -f /etc/nginx/sites-enabled/default \
-    && rm -f /etc/nginx/conf.d/default.conf
+    && rm -rf /etc/nginx/sites-enabled /etc/nginx/sites-available /etc/nginx/conf.d \
+    && mkdir -p /etc/nginx/servers
 
 # Install ttyd (not packaged in Debian)
 ARG TTYD_VERSION=1.7.7

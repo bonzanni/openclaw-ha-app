@@ -137,7 +137,7 @@ INGRESS_INTERFACE=$(bashio::addon.ip_address)
 declare INGRESS_PORT
 INGRESS_PORT=$(bashio::addon.ingress_port)
 
-bashio::log.info "Rendering nginx config (${INGRESS_INTERFACE}:${INGRESS_PORT})..."
+bashio::log.info "Rendering nginx ingress config (${INGRESS_INTERFACE}:${INGRESS_PORT})..."
 
 bashio::var.json \
     interface "${INGRESS_INTERFACE}" \
@@ -145,8 +145,16 @@ bashio::var.json \
     token "${GATEWAY_TOKEN}" \
     terminal_enabled "${ENABLE_TERMINAL}" \
     | tempio \
-        -template /etc/nginx/nginx.conf.gtpl \
-        -out /etc/nginx/nginx.conf
+        -template /etc/nginx/templates/ingress.gtpl \
+        -out /etc/nginx/servers/ingress.conf
+
+# Validate nginx config
+if ! nginx -t 2>&1; then
+    bashio::log.error "nginx config validation failed"
+    cat /etc/nginx/servers/ingress.conf
+    exit 1
+fi
+bashio::log.info "nginx config validated."
 
 # --------------------------------------------------------------------------
 # 7. Write landing page config (terminal visibility)

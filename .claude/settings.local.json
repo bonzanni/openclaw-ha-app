@@ -27,7 +27,10 @@
       "Bash(pip show:*)",
       "Bash(gh auth:*)",
       "Bash(GITHUB_TOKEN=\"\" gh repo create bonzanni/openclaw-ha-app --public --source=. --push --description \"Home Assistant add-on for OpenClaw AI Gateway\")",
-      "Bash(docker run:*)"
+      "Bash(docker run:*)",
+      "mcp__plugin_ha-dev_github__search_repositories",
+      "mcp__plugin_ha-dev_github__get_file_contents",
+      "mcp__plugin_ha-dev_github__search_code"
     ]
   }
 }
