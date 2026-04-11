@@ -1,0 +1,40 @@
+name: "OpenClaw"
+description: "Local-first personal AI gateway connecting 24+ messaging platforms to AI agents"
+version: "0.1.0"
+slug: "openclaw"
+url: "https://github.com/bonzanni/openclaw-ha-app"
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: application
+boot: auto
+ingress: true
+ingress_port: 8099
+ingress_entry: /
+panel_icon: "mdi:robot"
+panel_title: "OpenClaw"
+watchdog: "http://[HOST]:18789/healthz"
+backup: cold
+apparmor: true
+hassio_api: true
+homeassistant_api: true
+map:
+  - addon_config:rw
+  - data:rw
+ports:
+  18789/tcp: null
+  18790/tcp: null
+ports_description:
+  18789/tcp: "Gateway API (enable for companion integration or direct access)"
+  18790/tcp: "Bridge Protocol (multi-gateway federation)"
+options:
+  log_level: "info"
+  gateway_port: 18789
+  enable_terminal: false
+  enable_ha_mcp: true
+schema:
+  log_level: "list(trace|debug|info|notice|warning|error|fatal)"
+  gateway_port: "port"
+  enable_terminal: "bool"
+  enable_ha_mcp: "bool"

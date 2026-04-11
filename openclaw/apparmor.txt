@@ -1,0 +1,69 @@
+#include <tunables/global>
+
+profile openclaw flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Capabilities
+  file,
+  signal (send) set=(kill,term,int,hup,cont),
+  capability fowner,
+  capability chown,
+  capability dac_override,
+  capability setuid,
+  capability setgid,
+
+  # S6-Overlay (v3 paths)
+  /init ix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/s6-overlay/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
+
+  # Node.js and OpenClaw
+  /usr/local/bin/node ix,
+  /usr/local/bin/openclaw ix,
+  /usr/local/lib/node_modules/** r,
+  /usr/local/lib/node_modules/**/node_modules/.bin/* ix,
+
+  # nginx
+  /usr/sbin/nginx ix,
+  /etc/nginx/** r,
+  /var/log/nginx/** rw,
+  /var/lib/nginx/** rw,
+
+  # ttyd
+  /usr/bin/ttyd ix,
+
+  # Persistent user config (addon_config mount)
+  /config/** rw,
+
+  # Internal data
+  /data/** rw,
+
+  # Network
+  network inet stream,
+  network inet dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network unix stream,
+
+  # Proc and sys (read-only)
+  /proc/** r,
+  /sys/** r,
+
+  # Deny dangerous paths
+  deny /var/run/docker.sock rw,
+  deny /proc/[0-9]*/environ r,
+  deny /proc/sysrq-trigger rw,
+  deny network raw,
+  deny network packet,
+}
