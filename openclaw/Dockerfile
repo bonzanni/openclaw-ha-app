@@ -14,8 +14,7 @@ RUN npm install -g "openclaw@${OPENCLAW_VERSION}" \
 # ==============================================================================
 # Stage 2: Runtime container on HA base image
 # ==============================================================================
-ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM ghcr.io/home-assistant/base-debian:bookworm
 
 # Copy Node.js runtime from build stage (node, npm, npx + all modules)
 COPY --from=openclaw-build /usr/local/bin/node /usr/local/bin/node
