@@ -1,13 +1,9 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
-    # Landing page and static files
-    root /app/www;
-    index index.html;
-
-    # Gateway UI — pre-authenticated via server-side token injection
-    location /gateway/ {
-        proxy_pass http://127.0.0.1:18789/;
+    # Proxy everything to the OpenClaw Gateway (pre-authenticated)
+    location / {
+        proxy_pass http://127.0.0.1:18789;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -20,8 +16,7 @@ server {
         proxy_send_timeout 86400;
         proxy_buffering off;
 
-        # Strip CSP frame-ancestors from gateway so iframe embedding works
-        # (HA ingress auth is the access boundary, not CSP)
+        # Allow embedding in HA sidebar panel
         proxy_hide_header Content-Security-Policy;
         proxy_hide_header X-Frame-Options;
     }
