@@ -18,8 +18,11 @@ ENABLE_TERMINAL=$(bashio::config 'enable_terminal')
 # 2. Generate or load gateway token
 # --------------------------------------------------------------------------
 
-declare TOKEN_FILE="/data/openclaw/gateway_token"
+declare TOKEN_DIR="/data/openclaw"
+declare TOKEN_FILE="${TOKEN_DIR}/gateway_token"
 declare GATEWAY_TOKEN
+
+mkdir -p "${TOKEN_DIR}"
 
 if [ -f "${TOKEN_FILE}" ]; then
     GATEWAY_TOKEN=$(cat "${TOKEN_FILE}")
