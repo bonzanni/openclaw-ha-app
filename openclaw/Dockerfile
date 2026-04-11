@@ -34,10 +34,9 @@ RUN apt-get update \
         openssl \
         procps \
         jq \
-        libwebsockets-dev \
-        libjson-c-dev \
-        libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default \
+    && rm -f /etc/nginx/conf.d/default.conf
 
 # Install ttyd (not packaged in Debian)
 ARG TTYD_VERSION=1.7.7
