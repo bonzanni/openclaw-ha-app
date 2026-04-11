@@ -4,12 +4,12 @@
 # Start nginx (ingress reverse proxy)
 # ==============================================================================
 
-bashio::log.info "=== DEBUG: nginx.conf ==="
-cat /etc/nginx/nginx.conf
-bashio::log.info "=== DEBUG: servers/ ==="
-ls -la /etc/nginx/servers/ 2>&1 || echo "servers/ not found"
-cat /etc/nginx/servers/*.conf 2>/dev/null || echo "no .conf files"
-bashio::log.info "=== DEBUG: listening ports ==="
-nginx -T 2>&1 | grep -E "listen|server_name|root|include" || true
-bashio::log.info "=== Starting nginx ==="
+# Debug: verify server config exists
+if [ ! -f /etc/nginx/servers/ingress.conf ]; then
+    bashio::log.error "Missing /etc/nginx/servers/ingress.conf — init may have failed"
+    ls -la /etc/nginx/servers/ 2>&1
+    exit 1
+fi
+
+bashio::log.info "Starting nginx (config: $(wc -l < /etc/nginx/servers/ingress.conf) lines in ingress.conf)..."
 exec nginx

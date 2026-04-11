@@ -30,7 +30,8 @@
       "Bash(docker run:*)",
       "mcp__plugin_ha-dev_github__search_repositories",
       "mcp__plugin_ha-dev_github__get_file_contents",
-      "mcp__plugin_ha-dev_github__search_code"
+      "mcp__plugin_ha-dev_github__search_code",
+      "Bash(docker build:*)"
     ]
   }
 }

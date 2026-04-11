@@ -36,6 +36,7 @@ RUN apt-get update \
         jq \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /etc/nginx/sites-enabled /etc/nginx/sites-available /etc/nginx/conf.d \
+    && rm -rf /usr/share/nginx/html \
     && mkdir -p /etc/nginx/servers
 
 # Install ttyd (not packaged in Debian)
