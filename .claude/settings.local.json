@@ -24,7 +24,10 @@
       "Bash(grep -E \"\\\\.json$|\\\\.md$\")",
       "WebFetch(domain:www.home-assistant.io)",
       "WebFetch(domain:developers.home-assistant.io)",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Bash(gh auth:*)",
+      "Bash(GITHUB_TOKEN=\"\" gh repo create bonzanni/openclaw-ha-app --public --source=. --push --description \"Home Assistant add-on for OpenClaw AI Gateway\")",
+      "Bash(docker run:*)"
     ]
   }
 }

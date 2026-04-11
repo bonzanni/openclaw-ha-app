@@ -145,8 +145,8 @@ bashio::var.json \
     token "${GATEWAY_TOKEN}" \
     terminal_enabled "${ENABLE_TERMINAL}" \
     | tempio \
-        -template /etc/nginx/servers/ingress.conf.gtpl \
-        -out /etc/nginx/servers/ingress.conf
+        -template /etc/nginx/nginx.conf.gtpl \
+        -out /etc/nginx/nginx.conf
 
 # --------------------------------------------------------------------------
 # 7. Write landing page config (terminal visibility)
