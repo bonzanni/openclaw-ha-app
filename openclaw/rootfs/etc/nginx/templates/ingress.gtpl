@@ -19,6 +19,11 @@ server {
         proxy_read_timeout 86400;
         proxy_send_timeout 86400;
         proxy_buffering off;
+
+        # Strip CSP frame-ancestors from gateway so iframe embedding works
+        # (HA ingress auth is the access boundary, not CSP)
+        proxy_hide_header Content-Security-Policy;
+        proxy_hide_header X-Frame-Options;
     }
 
     # Terminal (ttyd) — only proxied when enabled

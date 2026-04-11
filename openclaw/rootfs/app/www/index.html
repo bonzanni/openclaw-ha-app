@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OpenClaw</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav id="tabs">
@@ -35,7 +35,7 @@
                 t.addEventListener('click', function() { switchTab(t.dataset.target); });
             });
 
-            fetch('/config.json').then(function(r) { return r.json(); }).then(function(cfg) {
+            fetch('config.json').then(function(r) { return r.json(); }).then(function(cfg) {
                 if (cfg.terminal_enabled) {
                     document.getElementById('tab-terminal').style.display = '';
                 }
