@@ -30,12 +30,21 @@ RUN ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/open
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         nginx \
-        ttyd \
         curl \
         openssl \
         procps \
         jq \
     && rm -rf /var/lib/apt/lists/*
+
+# Install ttyd from GitHub release (not in Debian bookworm repos)
+ARG TTYD_VERSION=1.7.7
+RUN ARCH=$(uname -m) \
+    && if [ "$ARCH" = "x86_64" ]; then TTYD_ARCH="x86_64"; \
+       elif [ "$ARCH" = "aarch64" ]; then TTYD_ARCH="aarch64"; \
+       else echo "Unsupported arch: $ARCH"; exit 1; fi \
+    && curl -fsSL "https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.${TTYD_ARCH}" \
+        -o /usr/bin/ttyd \
+    && chmod +x /usr/bin/ttyd
 
 # Create persistent data directories
 RUN mkdir -p /data/openclaw
