@@ -1,7 +1,7 @@
 # ==============================================================================
 # Stage 1: Install OpenClaw from npm using official Node.js image
 # ==============================================================================
-ARG OPENCLAW_VERSION=2026.4.2
+ARG OPENCLAW_VERSION=2026.4.11
 
 FROM node:24-bookworm-slim AS openclaw-build
 
