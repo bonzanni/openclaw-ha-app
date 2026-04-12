@@ -125,16 +125,11 @@ fi
 # 5. Write setup page config (terminal visibility)
 # --------------------------------------------------------------------------
 
-declare TERMINAL_ENABLED="false"
 if bashio::config.true 'enable_terminal'; then
-    TERMINAL_ENABLED="true"
+    echo '{"terminal_enabled":true}' > /data/openclaw/setup_config.json
+else
+    echo '{"terminal_enabled":false}' > /data/openclaw/setup_config.json
 fi
-
-jq -n \
-    --argjson terminal "${TERMINAL_ENABLED}" \
-    --arg token "${GATEWAY_TOKEN}" \
-    '{terminal_enabled: $terminal, gateway_token: $token}' \
-    > /data/openclaw/setup_config.json
 
 # --------------------------------------------------------------------------
 # 6. Configure mcporter for HA MCP (regenerated every boot)
