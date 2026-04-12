@@ -1,12 +1,14 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
-    # Auto-configure the Control UI with gateway URL and token.
-    # When accessed without gatewayUrl param, redirect to add it.
-    # The token is passed in the hash fragment (never sent to server).
+    # First visit (no gatewayUrl param): serve the init page that
+    # constructs the correct URL client-side and redirects.
+    # Subsequent visits have gatewayUrl in localStorage so the
+    # Control UI auto-connects.
     location = / {
         if ($arg_gatewayUrl = '') {
-            return 302 https://$http_host$request_uri?gatewayUrl=wss://$http_host$request_uri#token={{ .token }};
+            alias /app/www/;
+            break;
         }
         proxy_pass http://127.0.0.1:18789;
         proxy_http_version 1.1;
@@ -24,7 +26,7 @@ server {
         proxy_hide_header X-Frame-Options;
     }
 
-    # All other paths — proxy directly (assets, API, WS)
+    # All other paths — proxy to gateway (assets, API, WS)
     location / {
         proxy_pass http://127.0.0.1:18789;
         proxy_http_version 1.1;
