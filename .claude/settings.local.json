@@ -39,7 +39,8 @@
       "Read(//dev/**)",
       "WebFetch(domain:design.home-assistant.io)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:material-web.dev)"
+      "WebFetch(domain:material-web.dev)",
+      "Bash(npm view:*)"
     ]
   }
 }

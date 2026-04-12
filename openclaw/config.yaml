@@ -1,6 +1,6 @@
 name: "OpenClaw"
 description: "Local-first personal AI gateway connecting 24+ messaging platforms to AI agents"
-version: "0.2.3"
+version: "0.3.0"
 slug: "openclaw"
 url: "https://github.com/bonzanni/openclaw-ha-app"
 arch:
@@ -31,6 +31,8 @@ ports_description:
 options:
   log_level: "info"
   enable_terminal: false
+  enable_ha_mcp: true
 schema:
   log_level: "list(trace|debug|info|notice|warning|error|fatal)"
   enable_terminal: "bool"
+  enable_ha_mcp: "bool"

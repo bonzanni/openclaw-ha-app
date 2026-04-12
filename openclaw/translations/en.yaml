@@ -5,3 +5,6 @@ configuration:
   enable_terminal:
     name: Enable Web Terminal
     description: Show a terminal tab in the sidebar panel for shell access
+  enable_ha_mcp:
+    name: Enable HA MCP
+    description: Configure mcporter for Home Assistant MCP tools (requires MCP Server integration in HA)

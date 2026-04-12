@@ -8,7 +8,7 @@ FROM node:24-bookworm-slim AS openclaw-build
 ARG OPENCLAW_VERSION
 
 # Install OpenClaw globally — this gives us the openclaw CLI + all dependencies
-RUN npm install -g "openclaw@${OPENCLAW_VERSION}" \
+RUN npm install -g "openclaw@${OPENCLAW_VERSION}" mcporter \
     && npm cache clean --force
 
 # ==============================================================================
@@ -22,9 +22,11 @@ COPY --from=openclaw-build /usr/local/bin/npm /usr/local/bin/npm
 COPY --from=openclaw-build /usr/local/bin/npx /usr/local/bin/npx
 COPY --from=openclaw-build /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-# Create openclaw symlink in PATH
+# Create symlinks in PATH
 RUN ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/openclaw \
-    && chmod +x /usr/local/bin/openclaw
+    && chmod +x /usr/local/bin/openclaw \
+    && ln -sf /usr/local/lib/node_modules/mcporter/dist/cli.js /usr/local/bin/mcporter \
+    && chmod +x /usr/local/bin/mcporter
 
 # Install runtime dependencies
 RUN apt-get update \

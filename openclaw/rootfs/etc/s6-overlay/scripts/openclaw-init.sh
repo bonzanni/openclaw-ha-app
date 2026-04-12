@@ -132,7 +132,35 @@ else
 fi
 
 # --------------------------------------------------------------------------
-# 6. Write internal env file (regenerated every boot)
+# 6. Configure mcporter for HA MCP (regenerated every boot)
+# --------------------------------------------------------------------------
+
+if bashio::config.true 'enable_ha_mcp'; then
+    declare MCPORTER_DIR="/config/.mcporter"
+    declare MCPORTER_CONFIG="${MCPORTER_DIR}/mcporter.json"
+
+    mkdir -p "${MCPORTER_DIR}"
+
+    jq -n --arg token "${SUPERVISOR_TOKEN}" '{
+        mcpServers: {
+            HA: {
+                baseUrl: "http://supervisor/core/api/mcp",
+                headers: {
+                    Authorization: ("Bearer " + $token)
+                }
+            }
+        },
+        imports: []
+    }' > "${MCPORTER_CONFIG}"
+    chmod 600 "${MCPORTER_CONFIG}"
+
+    bashio::log.info "mcporter configured for HA MCP at http://supervisor/core/api/mcp"
+else
+    bashio::log.info "HA MCP disabled."
+fi
+
+# --------------------------------------------------------------------------
+# 7. Write internal env file (regenerated every boot)
 # --------------------------------------------------------------------------
 
 declare ENV_FILE="/data/openclaw/env"
@@ -146,7 +174,7 @@ declare ENV_FILE="/data/openclaw/env"
 chmod 600 "${ENV_FILE}"
 
 # --------------------------------------------------------------------------
-# 6. Render nginx config from tempio template
+# 8. Render nginx config from tempio template
 # --------------------------------------------------------------------------
 
 declare INGRESS_INTERFACE
