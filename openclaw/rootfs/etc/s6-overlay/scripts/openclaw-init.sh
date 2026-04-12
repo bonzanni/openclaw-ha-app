@@ -35,15 +35,23 @@ else
 fi
 
 # --------------------------------------------------------------------------
-# 3. Resolve HA ingress URL for allowedOrigins
+# 3. Resolve HA external URL for allowedOrigins
 # --------------------------------------------------------------------------
 
-declare INGRESS_URL=""
+declare HA_EXTERNAL_URL=""
 if bashio::supervisor.ping 2>/dev/null; then
-    INGRESS_URL=$(bashio::addon.ingress_url 2>/dev/null) || true
+    # The browser Origin header will be the HA external URL, not the ingress path
+    HA_EXTERNAL_URL=$(bashio::api.supervisor GET /core/info false \
+        | jq -r '.data.external_url // empty' 2>/dev/null) || true
+
+    # Fallback: try internal URL
+    if [ -z "${HA_EXTERNAL_URL}" ]; then
+        HA_EXTERNAL_URL=$(bashio::api.supervisor GET /core/info false \
+            | jq -r '.data.internal_url // empty' 2>/dev/null) || true
+    fi
 fi
 
-bashio::log.info "Ingress URL: ${INGRESS_URL:-not available}"
+bashio::log.info "HA URL for allowedOrigins: ${HA_EXTERNAL_URL:-not available}"
 
 # --------------------------------------------------------------------------
 # 4. Write openclaw.json (first boot only)
@@ -58,8 +66,8 @@ if [ ! -f "${CONFIG_FILE}" ]; then
     bashio::log.info "First boot — generating openclaw.json..."
 
     declare ORIGINS="[]"
-    if [ -n "${INGRESS_URL}" ]; then
-        ORIGINS=$(jq -n --arg url "${INGRESS_URL}" '[$url]')
+    if [ -n "${HA_EXTERNAL_URL}" ]; then
+        ORIGINS=$(jq -n --arg url "${HA_EXTERNAL_URL}" '[$url]')
     fi
 
     jq -n \
@@ -76,7 +84,9 @@ if [ ! -f "${CONFIG_FILE}" ]; then
             },
             trustedProxies: ["127.0.0.1"],
             controlUi: {
-                allowedOrigins: $origins
+                allowedOrigins: $origins,
+                dangerouslyDisableDeviceAuth: true,
+                allowInsecureAuth: true
             },
             http: {
                 endpoints: {
@@ -96,10 +106,10 @@ else
     bashio::log.info "Existing openclaw.json found — patching HA-managed keys only."
 
     # Patch allowedOrigins (HA URL may have changed)
-    if [ -n "${INGRESS_URL}" ]; then
+    if [ -n "${HA_EXTERNAL_URL}" ]; then
         declare TMP_FILE
         TMP_FILE=$(mktemp)
-        jq --arg url "${INGRESS_URL}" \
+        jq --arg url "${HA_EXTERNAL_URL}" \
             '.gateway.controlUi.allowedOrigins = [$url]' \
             "${CONFIG_FILE}" > "${TMP_FILE}" \
             && mv "${TMP_FILE}" "${CONFIG_FILE}"
@@ -155,16 +165,6 @@ if ! nginx -t 2>&1; then
     exit 1
 fi
 bashio::log.info "nginx config validated."
-
-# --------------------------------------------------------------------------
-# 7. Write landing page config (terminal visibility)
-# --------------------------------------------------------------------------
-
-if bashio::config.true 'enable_terminal'; then
-    echo '{"terminal_enabled":true}' > /app/www/config.json
-else
-    echo '{"terminal_enabled":false}' > /app/www/config.json
-fi
 
 # --------------------------------------------------------------------------
 # Done
