@@ -6,7 +6,7 @@ server {
     # The token is passed in the hash fragment (never sent to server).
     location = / {
         if ($arg_gatewayUrl = '') {
-            return 302 $scheme://$http_host$request_uri?gatewayUrl=$scheme://$http_host$request_uri#token={{ .token }};
+            return 302 https://$http_host$request_uri?gatewayUrl=wss://$http_host$request_uri#token={{ .token }};
         }
         proxy_pass http://127.0.0.1:18789;
         proxy_http_version 1.1;
