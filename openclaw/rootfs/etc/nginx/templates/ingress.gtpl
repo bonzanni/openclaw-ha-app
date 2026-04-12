@@ -1,10 +1,6 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
-    # Normalize double slashes (ingress_entry: / can produce //)
-    merge_slashes on;
-    rewrite ^//(.*)$ /$1 break;
-
     # Proxy everything to the OpenClaw Gateway (pre-authenticated)
     location / {
         proxy_pass http://127.0.0.1:18789;

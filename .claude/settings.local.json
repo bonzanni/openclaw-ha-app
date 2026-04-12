@@ -33,7 +33,8 @@
       "mcp__plugin_ha-dev_github__search_code",
       "Bash(docker build:*)",
       "mcp__plugin_ha-dev_github__list_issues",
-      "mcp__plugin_ha-dev_github__search_issues"
+      "mcp__plugin_ha-dev_github__search_issues",
+      "Bash(find:*)"
     ]
   }
 }
