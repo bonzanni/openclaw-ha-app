@@ -6,8 +6,9 @@ Local-first personal AI gateway connecting 24+ messaging platforms to AI agents.
 
 1. Install the add-on
 2. Start it — a gateway token is auto-generated
-3. Open the sidebar panel to access the Gateway UI
-4. Configure your agents, channels, and API keys in the Control UI
+3. Open the sidebar panel — the Control UI connects automatically
+4. On first visit, confirm the gateway URL when prompted (one-time only)
+5. Configure your agents, channels, and API keys in the Control UI
 
 ## Configuration
 
@@ -20,9 +21,13 @@ The add-on options below control only the add-on infrastructure:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `log_level` | `info` | Log verbosity (trace/debug/info/notice/warning/error/fatal) |
-| `gateway_port` | `18789` | Internal gateway port |
-| `enable_terminal` | `false` | Enable web terminal tab in sidebar |
-| `enable_ha_mcp` | `true` | Enable HA MCP tools for AI agents |
+| `enable_terminal` | `false` | Enable web terminal for shell access |
+
+## Web Terminal
+
+When enabled, the web terminal is accessible at the ingress URL with `/terminal/` appended.
+The terminal provides shell access inside the add-on container and is protected by
+HA authentication.
 
 ## Companion Integration
 
@@ -50,5 +55,6 @@ To give AI agents control over your smart home:
 
 - The gateway token is auto-generated and stored internally
 - The sidebar panel is protected by HA authentication
+- nginx injects the gateway token server-side (never exposed to the browser)
 - The terminal (when enabled) provides shell access to the container
 - AI agent access to HA is controlled by HA's entity exposure settings

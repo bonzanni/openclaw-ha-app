@@ -35,14 +35,11 @@ else
 fi
 
 # --------------------------------------------------------------------------
-# 3. Resolve HA external URL and construct gateway WS URL
+# 3. Resolve HA external URL for allowedOrigins
 # --------------------------------------------------------------------------
 
-# User override or auto-detect
 declare HA_URL=""
-HA_URL=$(bashio::config 'ha_url' 2>/dev/null) || true
-
-if [ -z "${HA_URL}" ] && bashio::supervisor.ping 2>/dev/null; then
+if bashio::supervisor.ping 2>/dev/null; then
     HA_URL=$(curl -fsS \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         "http://supervisor/core/api/config" \
@@ -52,24 +49,7 @@ fi
 # Strip trailing slash
 HA_URL="${HA_URL%/}"
 
-# Get the ingress path (e.g., /api/hassio_ingress/<token>/)
-declare INGRESS_PATH=""
-if bashio::supervisor.ping 2>/dev/null; then
-    INGRESS_PATH=$(bashio::addon.ingress_url 2>/dev/null) || true
-fi
-
-# Construct the full gateway WS URL for the Control UI
-declare GATEWAY_WS_URL=""
-if [ -n "${HA_URL}" ] && [ -n "${INGRESS_PATH}" ]; then
-    # Convert https:// to wss://
-    declare WS_SCHEME
-    WS_SCHEME=$(echo "${HA_URL}" | sed 's|^https://|wss://|; s|^http://|ws://|')
-    GATEWAY_WS_URL="${WS_SCHEME}${INGRESS_PATH}"
-fi
-
-bashio::log.info "HA URL: ${HA_URL:-not available}"
-bashio::log.info "Ingress path: ${INGRESS_PATH:-not available}"
-bashio::log.info "Gateway WS URL: ${GATEWAY_WS_URL:-not available}"
+bashio::log.info "HA URL for allowedOrigins: ${HA_URL:-not available}"
 
 # --------------------------------------------------------------------------
 # 4. Write openclaw.json (first boot only)
@@ -167,19 +147,11 @@ INGRESS_PORT=$(bashio::addon.ingress_port)
 
 bashio::log.info "Rendering nginx ingress config (${INGRESS_INTERFACE}:${INGRESS_PORT})..."
 
-# HTTPS version for the redirect target (same path, https not wss)
-declare GATEWAY_HTTPS_URL=""
-if [ -n "${HA_URL}" ] && [ -n "${INGRESS_PATH}" ]; then
-    GATEWAY_HTTPS_URL="${HA_URL}${INGRESS_PATH}"
-fi
-
 bashio::var.json \
     interface "${INGRESS_INTERFACE}" \
     port "^${INGRESS_PORT}" \
     token "${GATEWAY_TOKEN}" \
     terminal_enabled "${ENABLE_TERMINAL}" \
-    gateway_ws_url "${GATEWAY_WS_URL}" \
-    gateway_https_url "${GATEWAY_HTTPS_URL}" \
     | tempio \
         -template /etc/nginx/templates/ingress.gtpl \
         -out /etc/nginx/servers/ingress.conf

@@ -5,6 +5,3 @@ configuration:
   enable_terminal:
     name: Enable Web Terminal
     description: Show a terminal tab in the sidebar panel for shell access
-  ha_url:
-    name: Home Assistant URL
-    description: "Your HA external URL (e.g., https://ha.example.com). Leave empty to auto-detect."
