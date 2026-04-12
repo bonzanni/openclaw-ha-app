@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>
+(function() {
+  var loc = window.location;
+  var root = loc.href.split('__setup')[0];
+  var settingsKey = 'openclaw.control.settings.v1';
+  if (localStorage.getItem(settingsKey)) {
+    // Already configured — go straight to the UI
+    location.replace(root);
+  } else {
+    // First visit — pass gatewayUrl so the Control UI can connect
+    var wsUrl = root.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
+    location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
+  }
+})();
+</script></body></html>

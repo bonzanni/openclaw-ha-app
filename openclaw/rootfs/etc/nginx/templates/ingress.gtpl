@@ -1,6 +1,11 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
+    # Setup page: derives gatewayUrl from window.location and redirects
+    location = /__setup {
+        alias /app/www/__setup/index.html;
+    }
+
     # Proxy everything to the OpenClaw Gateway (pre-authenticated)
     location / {
         proxy_pass http://127.0.0.1:18789;
