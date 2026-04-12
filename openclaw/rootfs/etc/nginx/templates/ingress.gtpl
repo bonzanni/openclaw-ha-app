@@ -4,6 +4,7 @@ server {
     # Setup page: derives gatewayUrl from window.location and redirects
     location = /__setup {
         default_type text/html;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
         alias /app/www/__setup/index.html;
     }
 
