@@ -16,14 +16,14 @@ RUN npm install -g "openclaw@${OPENCLAW_VERSION}" mcporter \
 # ==============================================================================
 FROM ghcr.io/home-assistant/base-debian:trixie
 
-# Copy Node.js runtime from build stage (node, npm, npx + all modules)
+# Copy Node.js runtime from build stage
 COPY --from=openclaw-build /usr/local/bin/node /usr/local/bin/node
-COPY --from=openclaw-build /usr/local/bin/npm /usr/local/bin/npm
-COPY --from=openclaw-build /usr/local/bin/npx /usr/local/bin/npx
 COPY --from=openclaw-build /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-# Create symlinks in PATH
-RUN ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/openclaw \
+# Create symlinks (npm/npx are symlinks in the build stage — recreate them)
+RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/openclaw \
     && chmod +x /usr/local/bin/openclaw \
     && ln -sf /usr/local/lib/node_modules/mcporter/dist/cli.js /usr/local/bin/mcporter \
     && chmod +x /usr/local/bin/mcporter
