@@ -36,6 +36,7 @@ RUN apt-get update \
         openssl \
         procps \
         jq \
+        git \
         micro \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /etc/nginx/sites-enabled /etc/nginx/sites-available /etc/nginx/conf.d \
