@@ -35,24 +35,41 @@ else
 fi
 
 # --------------------------------------------------------------------------
-# 3. Resolve HA external URL for allowedOrigins
+# 3. Resolve HA external URL and construct gateway WS URL
 # --------------------------------------------------------------------------
 
-declare HA_EXTERNAL_URL=""
-if bashio::supervisor.ping 2>/dev/null; then
-    # Call HA Core API via Supervisor proxy to get the external/internal URL.
-    # The browser Origin header will be this URL — gateway needs it in allowedOrigins.
-    # /core/api/config proxies to HA Core's /api/config endpoint.
-    HA_EXTERNAL_URL=$(curl -fsS \
+# User override or auto-detect
+declare HA_URL=""
+HA_URL=$(bashio::config 'ha_url' 2>/dev/null) || true
+
+if [ -z "${HA_URL}" ] && bashio::supervisor.ping 2>/dev/null; then
+    HA_URL=$(curl -fsS \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         "http://supervisor/core/api/config" \
         | jq -r '.external_url // .internal_url // empty' 2>/dev/null) || true
-
-    # Strip trailing slash if present (Origin header never has one)
-    HA_EXTERNAL_URL="${HA_EXTERNAL_URL%/}"
 fi
 
-bashio::log.info "HA URL for allowedOrigins: ${HA_EXTERNAL_URL:-not available}"
+# Strip trailing slash
+HA_URL="${HA_URL%/}"
+
+# Get the ingress path (e.g., /api/hassio_ingress/<token>/)
+declare INGRESS_PATH=""
+if bashio::supervisor.ping 2>/dev/null; then
+    INGRESS_PATH=$(bashio::addon.ingress_url 2>/dev/null) || true
+fi
+
+# Construct the full gateway WS URL for the Control UI
+declare GATEWAY_WS_URL=""
+if [ -n "${HA_URL}" ] && [ -n "${INGRESS_PATH}" ]; then
+    # Convert https:// to wss://
+    declare WS_SCHEME
+    WS_SCHEME=$(echo "${HA_URL}" | sed 's|^https://|wss://|; s|^http://|ws://|')
+    GATEWAY_WS_URL="${WS_SCHEME}${INGRESS_PATH}"
+fi
+
+bashio::log.info "HA URL: ${HA_URL:-not available}"
+bashio::log.info "Ingress path: ${INGRESS_PATH:-not available}"
+bashio::log.info "Gateway WS URL: ${GATEWAY_WS_URL:-not available}"
 
 # --------------------------------------------------------------------------
 # 4. Write openclaw.json (first boot only)
@@ -67,8 +84,8 @@ if [ ! -f "${CONFIG_FILE}" ]; then
     bashio::log.info "First boot — generating openclaw.json..."
 
     declare ORIGINS="[]"
-    if [ -n "${HA_EXTERNAL_URL}" ]; then
-        ORIGINS=$(jq -n --arg url "${HA_EXTERNAL_URL}" '[$url]')
+    if [ -n "${HA_URL}" ]; then
+        ORIGINS=$(jq -n --arg url "${HA_URL}" '[$url]')
     fi
 
     jq -n \
@@ -107,10 +124,10 @@ else
     bashio::log.info "Existing openclaw.json found — patching HA-managed keys only."
 
     # Patch allowedOrigins (HA URL may have changed)
-    if [ -n "${HA_EXTERNAL_URL}" ]; then
+    if [ -n "${HA_URL}" ]; then
         declare TMP_FILE
         TMP_FILE=$(mktemp)
-        jq --arg url "${HA_EXTERNAL_URL}" \
+        jq --arg url "${HA_URL}" \
             '.gateway.controlUi.allowedOrigins = [$url]' \
             "${CONFIG_FILE}" > "${TMP_FILE}" \
             && mv "${TMP_FILE}" "${CONFIG_FILE}"
@@ -150,11 +167,19 @@ INGRESS_PORT=$(bashio::addon.ingress_port)
 
 bashio::log.info "Rendering nginx ingress config (${INGRESS_INTERFACE}:${INGRESS_PORT})..."
 
+# HTTPS version for the redirect target (same path, https not wss)
+declare GATEWAY_HTTPS_URL=""
+if [ -n "${HA_URL}" ] && [ -n "${INGRESS_PATH}" ]; then
+    GATEWAY_HTTPS_URL="${HA_URL}${INGRESS_PATH}"
+fi
+
 bashio::var.json \
     interface "${INGRESS_INTERFACE}" \
     port "^${INGRESS_PORT}" \
     token "${GATEWAY_TOKEN}" \
     terminal_enabled "${ENABLE_TERMINAL}" \
+    gateway_ws_url "${GATEWAY_WS_URL}" \
+    gateway_https_url "${GATEWAY_HTTPS_URL}" \
     | tempio \
         -template /etc/nginx/templates/ingress.gtpl \
         -out /etc/nginx/servers/ingress.conf
@@ -166,12 +191,6 @@ if ! nginx -t 2>&1; then
     exit 1
 fi
 bashio::log.info "nginx config validated."
-
-# --------------------------------------------------------------------------
-# 7. Prepare init page with gateway token
-# --------------------------------------------------------------------------
-
-sed "s/TOKEN_PLACEHOLDER/${GATEWAY_TOKEN}/" /app/www/init.html > /app/www/index.html
 
 # --------------------------------------------------------------------------
 # Done
