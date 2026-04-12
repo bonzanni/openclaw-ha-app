@@ -28,12 +28,12 @@ The add-on options below control only the add-on infrastructure:
 When enabled, the web terminal provides shell access inside the add-on container,
 starting in `/config/` (where your OpenClaw config and workspaces live).
 
-**How to access:** Open the OpenClaw panel, then change the URL path after the
-ingress token to `/terminal/`. For example, if the panel URL is:
+**How to access:** Open the OpenClaw panel in a new browser tab (right-click the
+sidebar entry > "Open in new tab"). The address bar will show the ingress URL like:
 ```
-https://your-ha/api/hassio_ingress/TOKEN/chat?session=main
+https://your-ha/api/hassio_ingress/TOKEN/__setup
 ```
-Replace everything after the token with `/terminal/`:
+Replace `__setup` with `terminal/`:
 ```
 https://your-ha/api/hassio_ingress/TOKEN/terminal/
 ```

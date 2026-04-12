@@ -1,11 +1,18 @@
 server {
     listen {{ .interface }}:{{ .port }} default_server;
 
-    # Setup page: derives gatewayUrl from window.location and redirects
+    # Setup page: redirect (terminal off) or tabbed UI (terminal on)
     location = /__setup {
         default_type text/html;
         add_header Cache-Control "no-store, no-cache, must-revalidate";
         alias /app/www/__setup/index.html;
+    }
+
+    # Setup config (terminal enabled flag)
+    location = /__setup_config.json {
+        default_type application/json;
+        add_header Cache-Control "no-store";
+        alias /data/openclaw/setup_config.json;
     }
 
     # Proxy everything to the OpenClaw Gateway (pre-authenticated)

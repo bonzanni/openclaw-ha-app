@@ -1,15 +1,84 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenClaw</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#1a1a2e;color:#e0e0e0;font-family:system-ui,sans-serif}
+#tabs{display:flex;background:#16213e;border-bottom:1px solid #0f3460}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;color:#8899aa;font-size:14px;font-weight:500;border:none;background:none;transition:all .2s}
+.tab:hover{color:#e0e0e0;background:#1a1a3e}
+.tab.active{color:#fff;background:#1a1a2e;border-bottom:2px solid #e94560}
+#content{height:calc(100% - 45px);position:relative}
+.frame{position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:none}
+.frame.active{display:block}
+</style>
+</head>
+<body>
+<div id="tabs">
+  <button class="tab active" data-target="terminal">Terminal</button>
+  <button class="tab" data-target="gateway">Gateway</button>
+</div>
+<div id="content">
+  <iframe id="frame-terminal" class="frame active"></iframe>
+  <iframe id="frame-gateway" class="frame"></iframe>
+</div>
+<script>
 (function() {
-  var loc = window.location;
-  var root = loc.href.split('__setup')[0];
+  var root = window.location.href.split('__setup')[0];
   var settingsKey = 'openclaw.control.settings.v1';
-  if (localStorage.getItem(settingsKey)) {
-    // Already configured — go straight to the UI
-    location.replace(root);
-  } else {
-    // First visit — pass gatewayUrl so the Control UI can connect
-    var wsUrl = root.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
-    location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
-  }
+
+  // If terminal is not enabled, redirect to gateway (same as before)
+  fetch('__setup_config.json').then(function(r){return r.json()}).then(function(cfg) {
+    if (!cfg.terminal_enabled) {
+      if (localStorage.getItem(settingsKey)) {
+        location.replace(root);
+      } else {
+        var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
+        location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
+      }
+      return;
+    }
+
+    // Terminal enabled — show tabbed UI
+    var termFrame = document.getElementById('frame-terminal');
+    var gwFrame = document.getElementById('frame-gateway');
+
+    // Load terminal immediately (default tab)
+    termFrame.src = root + 'terminal/';
+
+    // Build gateway URL
+    var gwUrl = root;
+    if (!localStorage.getItem(settingsKey)) {
+      var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
+      gwUrl = root + '?gatewayUrl=' + encodeURIComponent(wsUrl);
+    }
+
+    // Tab switching
+    var tabs = document.querySelectorAll('.tab');
+    var frames = [termFrame, gwFrame];
+    tabs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var target = t.dataset.target;
+        tabs.forEach(function(b){b.classList.toggle('active', b.dataset.target===target)});
+        termFrame.classList.toggle('active', target==='terminal');
+        gwFrame.classList.toggle('active', target==='gateway');
+        // Lazy-load gateway on first switch
+        if (target==='gateway' && !gwFrame.src) gwFrame.src = gwUrl;
+      });
+    });
+  }).catch(function() {
+    // Config fetch failed — fall back to redirect
+    if (localStorage.getItem(settingsKey)) {
+      location.replace(root);
+    } else {
+      var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
+      location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
+    }
+  });
 })();
-</script></body></html>
+</script>
+</body>
+</html>
