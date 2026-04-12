@@ -1,6 +1,6 @@
 name: "OpenClaw"
 description: "Local-first personal AI gateway connecting 24+ messaging platforms to AI agents"
-version: "0.1.16"
+version: "0.1.17"
 slug: "openclaw"
 url: "https://github.com/bonzanni/openclaw-ha-app"
 arch:
@@ -11,7 +11,7 @@ startup: application
 boot: auto
 ingress: true
 ingress_port: 8099
-ingress_entry: ""
+ingress_entry: /
 ingress_stream: true
 panel_icon: "mdi:robot"
 panel_title: "OpenClaw"

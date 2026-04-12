@@ -31,7 +31,9 @@
       "mcp__plugin_ha-dev_github__search_repositories",
       "mcp__plugin_ha-dev_github__get_file_contents",
       "mcp__plugin_ha-dev_github__search_code",
-      "Bash(docker build:*)"
+      "Bash(docker build:*)",
+      "mcp__plugin_ha-dev_github__list_issues",
+      "mcp__plugin_ha-dev_github__search_issues"
     ]
   }
 }
