@@ -53,7 +53,9 @@
       "Bash(cp -r \"O:/17e0cc66_openclaw_assistant/.openclaw/agents/finance\" \"O:/54e3d510_openclaw/.openclaw/agents/finance\")",
       "Bash(cp -r \"O:/17e0cc66_openclaw_assistant/.openclaw/extensions/fish-audio-tts\" \"O:/54e3d510_openclaw/.openclaw/extensions/fish-audio-tts\")",
       "Bash(cp -r \"O:/17e0cc66_openclaw_assistant/.openclaw/extensions/strip-html-filler\" \"O:/54e3d510_openclaw/.openclaw/extensions/strip-html-filler\")",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(cp -r \"O:/17e0cc66_openclaw_assistant/.openclaw/hooks/auto-rekognition\" \"O:/54e3d510_openclaw/.openclaw/hooks/auto-rekognition\")",
+      "Bash(cp -r \"O:/17e0cc66_openclaw_assistant/.openclaw/telegram\" \"O:/54e3d510_openclaw/.openclaw/telegram\")"
     ]
   }
 }
