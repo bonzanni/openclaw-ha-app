@@ -53,6 +53,12 @@ RUN ARCH="$(dpkg --print-architecture)" \
         -o /usr/bin/ttyd \
     && chmod +x /usr/bin/ttyd
 
+# Install bundled plugin runtime deps (OpenClaw needs these at startup)
+RUN mkdir -p /tmp/openclaw-init \
+    && cd /tmp/openclaw-init \
+    && OPENCLAW_STATE_DIR=/tmp/openclaw-init node /usr/local/lib/node_modules/openclaw/openclaw.mjs doctor --fix --non-interactive 2>&1 || true \
+    && rm -rf /tmp/openclaw-init
+
 # Create persistent data directories
 RUN mkdir -p /data/openclaw
 
