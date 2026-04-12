@@ -16,4 +16,4 @@ exec ttyd \
     --port 7681 \
     --base-path /terminal \
     --cwd /config \
-    bash
+    bash -c "source /data/openclaw/env 2>/dev/null; exec bash"
