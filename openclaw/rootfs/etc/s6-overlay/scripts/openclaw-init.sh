@@ -40,15 +40,16 @@ fi
 
 declare HA_EXTERNAL_URL=""
 if bashio::supervisor.ping 2>/dev/null; then
-    # The browser Origin header will be the HA external URL, not the ingress path
-    HA_EXTERNAL_URL=$(bashio::api.supervisor GET /core/info false \
-        | jq -r '.data.external_url // empty' 2>/dev/null) || true
+    # Call HA Core API via Supervisor proxy to get the external/internal URL.
+    # The browser Origin header will be this URL — gateway needs it in allowedOrigins.
+    # /core/api/config proxies to HA Core's /api/config endpoint.
+    HA_EXTERNAL_URL=$(curl -fsS \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+        "http://supervisor/core/api/config" \
+        | jq -r '.external_url // .internal_url // empty' 2>/dev/null) || true
 
-    # Fallback: try internal URL
-    if [ -z "${HA_EXTERNAL_URL}" ]; then
-        HA_EXTERNAL_URL=$(bashio::api.supervisor GET /core/info false \
-            | jq -r '.data.internal_url // empty' 2>/dev/null) || true
-    fi
+    # Strip trailing slash if present (Origin header never has one)
+    HA_EXTERNAL_URL="${HA_EXTERNAL_URL%/}"
 fi
 
 bashio::log.info "HA URL for allowedOrigins: ${HA_EXTERNAL_URL:-not available}"
