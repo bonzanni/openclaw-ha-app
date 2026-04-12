@@ -3,6 +3,7 @@ server {
 
     # Setup page: derives gatewayUrl from window.location and redirects
     location = /__setup {
+        default_type text/html;
         alias /app/www/__setup/index.html;
     }
 
