@@ -36,7 +36,10 @@
       "mcp__plugin_ha-dev_github__search_issues",
       "Bash(find:*)",
       "Read(//c/tmp/**)",
-      "Read(//dev/**)"
+      "Read(//dev/**)",
+      "WebFetch(domain:design.home-assistant.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:material-web.dev)"
     ]
   }
 }
