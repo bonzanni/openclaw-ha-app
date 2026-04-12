@@ -43,14 +43,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:Roboto,
   var root = window.location.href.split('__setup')[0];
   var settingsKey = 'openclaw.control.settings.v1';
 
-  // If terminal is not enabled, redirect to gateway (same as before)
+  function buildGatewayUrl(token) {
+    var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
+    var hash = token ? '#token=' + token : '';
+    return root + '?gatewayUrl=' + encodeURIComponent(wsUrl) + hash;
+  }
+
+  function hasStoredToken() {
+    try {
+      var s = JSON.parse(localStorage.getItem(settingsKey) || '{}');
+      return !!s.token;
+    } catch(e) { return false; }
+  }
+
   fetch('__setup_config.json').then(function(r){return r.json()}).then(function(cfg) {
+    var token = cfg.gateway_token || '';
+
     if (!cfg.terminal_enabled) {
-      if (localStorage.getItem(settingsKey)) {
+      if (hasStoredToken()) {
         location.replace(root);
       } else {
-        var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
-        location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
+        location.replace(buildGatewayUrl(token));
       }
       return;
     }
@@ -58,37 +71,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:Roboto,
     // Terminal enabled — show tabbed UI
     var termFrame = document.getElementById('frame-terminal');
     var gwFrame = document.getElementById('frame-gateway');
-
-    // Load terminal immediately (default tab)
     termFrame.src = root + 'terminal/';
 
-    // Build gateway URL
-    var gwUrl = root;
-    if (!localStorage.getItem(settingsKey)) {
-      var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
-      gwUrl = root + '?gatewayUrl=' + encodeURIComponent(wsUrl);
-    }
+    var gwUrl = hasStoredToken() ? root : buildGatewayUrl(token);
 
-    // Tab switching
     var tabs = document.querySelectorAll('.tab');
-    var frames = [termFrame, gwFrame];
     tabs.forEach(function(t) {
       t.addEventListener('click', function() {
         var target = t.dataset.target;
         tabs.forEach(function(b){b.classList.toggle('active', b.dataset.target===target)});
         termFrame.classList.toggle('active', target==='terminal');
         gwFrame.classList.toggle('active', target==='gateway');
-        // Lazy-load gateway on first switch
         if (target==='gateway' && !gwFrame.src) gwFrame.src = gwUrl;
       });
     });
   }).catch(function() {
-    // Config fetch failed — fall back to redirect
-    if (localStorage.getItem(settingsKey)) {
+    if (hasStoredToken()) {
       location.replace(root);
     } else {
-      var wsUrl = root.replace(/^https:/,'wss:').replace(/^http:/,'ws:');
-      location.replace(root + '?gatewayUrl=' + encodeURIComponent(wsUrl));
+      location.replace(buildGatewayUrl(''));
     }
   });
 })();

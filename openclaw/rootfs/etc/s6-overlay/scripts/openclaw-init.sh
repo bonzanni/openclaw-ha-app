@@ -126,9 +126,9 @@ fi
 # --------------------------------------------------------------------------
 
 if bashio::config.true 'enable_terminal'; then
-    echo '{"terminal_enabled":true}' > /data/openclaw/setup_config.json
+    echo "{\"terminal_enabled\":true,\"gateway_token\":\"${GATEWAY_TOKEN}\"}" > /data/openclaw/setup_config.json
 else
-    echo '{"terminal_enabled":false}' > /data/openclaw/setup_config.json
+    echo "{\"terminal_enabled\":false,\"gateway_token\":\"${GATEWAY_TOKEN}\"}" > /data/openclaw/setup_config.json
 fi
 
 # --------------------------------------------------------------------------
