@@ -8,7 +8,7 @@ FROM node:24-bookworm-slim AS openclaw-build
 ARG OPENCLAW_VERSION
 
 # Install OpenClaw globally — this gives us the openclaw CLI + all dependencies
-RUN npm install -g "openclaw@${OPENCLAW_VERSION}" mcporter \
+RUN npm install -g "openclaw@${OPENCLAW_VERSION}" mcporter @tobilu/qmd \
     && npm cache clean --force
 
 # ==============================================================================
