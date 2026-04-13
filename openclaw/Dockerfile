@@ -26,7 +26,9 @@ RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -sf /usr/local/lib/node_modules/openclaw/openclaw.mjs /usr/local/bin/openclaw \
     && chmod +x /usr/local/bin/openclaw \
     && ln -sf /usr/local/lib/node_modules/mcporter/dist/cli.js /usr/local/bin/mcporter \
-    && chmod +x /usr/local/bin/mcporter
+    && chmod +x /usr/local/bin/mcporter \
+    && ln -sf /usr/local/lib/node_modules/@tobilu/qmd/bin/qmd /usr/local/bin/qmd \
+    && chmod +x /usr/local/bin/qmd
 
 # Install runtime dependencies
 RUN apt-get update \
@@ -61,7 +63,7 @@ RUN OPENCLAW_STATE_DIR=/tmp/oc-init \
     HOME=/tmp \
     node /usr/local/lib/node_modules/openclaw/openclaw.mjs \
         doctor --fix --non-interactive 2>&1 || true \
-    && rm -rf /tmp/oc-init /tmp/.npm
+    && rm -rf /tmp/oc-init /tmp/.npm /tmp/.openclaw /root/.openclaw
 
 # Create persistent data directories
 RUN mkdir -p /data/openclaw
