@@ -166,6 +166,7 @@ fi
 declare ENV_FILE="/data/openclaw/env"
 
 {
+    echo "HOME=/config"
     echo "OPENCLAW_STATE_DIR=/config/.openclaw"
     echo "OPENCLAW_CONFIG_PATH=/config/.openclaw/openclaw.json"
     echo "OPENCLAW_GATEWAY_TOKEN=${GATEWAY_TOKEN}"
