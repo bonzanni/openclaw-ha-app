@@ -171,6 +171,7 @@ declare ENV_FILE="/data/openclaw/env"
     echo "OPENCLAW_CONFIG_PATH=/config/.openclaw/openclaw.json"
     echo "OPENCLAW_GATEWAY_TOKEN=${GATEWAY_TOKEN}"
     echo "NODE_OPTIONS=--max-old-space-size=2048"
+    echo "INVOCATION_ID=openclaw-ha-addon"
 } > "${ENV_FILE}"
 chmod 600 "${ENV_FILE}"
 
