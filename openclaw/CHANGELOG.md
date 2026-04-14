@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.16
+
+- Register Supervisor discovery service for companion integration
+- Enables zero-config setup of the openclaw HA integration
+
 ## 0.1.0
 
 - Initial release
