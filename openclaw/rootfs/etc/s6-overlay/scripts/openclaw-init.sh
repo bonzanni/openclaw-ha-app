@@ -204,6 +204,20 @@ fi
 bashio::log.info "nginx config validated."
 
 # --------------------------------------------------------------------------
+# 9. Register discovery for companion integration
+# --------------------------------------------------------------------------
+if bashio::supervisor.ping 2>/dev/null; then
+    bashio::log.info "Registering discovery service for companion integration..."
+    declare DISCOVERY_CONFIG
+    DISCOVERY_CONFIG=$(bashio::var.json \
+        host "$(hostname)" \
+        port "^18789" \
+        token "${GATEWAY_TOKEN}")
+    bashio::discovery "openclaw" "${DISCOVERY_CONFIG}" \
+        || bashio::log.warning "Discovery registration failed (non-critical)"
+fi
+
+# --------------------------------------------------------------------------
 # Done
 # --------------------------------------------------------------------------
 

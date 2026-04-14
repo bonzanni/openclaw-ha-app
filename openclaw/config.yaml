@@ -36,3 +36,5 @@ schema:
   log_level: "list(trace|debug|info|notice|warning|error|fatal)"
   enable_terminal: "bool"
   enable_ha_mcp: "bool"
+discovery:
+  - openclaw
